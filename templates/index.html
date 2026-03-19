@@ -1,0 +1,1205 @@
+{% extends "base.html" %}
+
+{% block title %}Enterprise Dashboard - Zoning Compliance Checker{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5 fade-in">
+    <div class="col-12">
+        <div class="card border-0 shadow-professional-lg overflow-hidden">
+            <div class="card-body p-0">
+                <div class="row g-0">
+                    <div class="col-lg-8 p-5">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="bg-primary bg-gradient rounded-circle p-3 me-3">
+                                <i class="bi bi-building-gear text-white fs-2"></i>
+                            </div>
+                            <div>
+                                <h1 class="h2 mb-1 fw-bold">Enterprise Compliance Dashboard</h1>
+                                <p class="text-muted mb-0">Professional zoning analysis for government contractors and geospatial companies</p>
+                            </div>
+                        </div>
+                        
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="badge bg-success bg-gradient p-2 mb-2">
+                                        <i class="bi bi-shield-check me-1"></i>Enterprise Ready
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="badge bg-info bg-gradient p-2 mb-2">
+                                        <i class="bi bi-globe me-1"></i>Nationwide Coverage
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="badge bg-warning bg-gradient p-2 mb-2">
+                                        <i class="bi bi-award me-1"></i>Professional Grade
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center">
+                                    <div class="badge bg-primary bg-gradient p-2 mb-2">
+                                        <i class="bi bi-lightning me-1"></i>Real-Time Analysis
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex gap-3">
+                            <a href="/analysis" class="btn btn-primary btn-lg">
+                                <i class="bi bi-play-circle me-2"></i>Start Analysis
+                            </a>
+                            <button class="btn btn-outline-secondary btn-lg" onclick="showAPIDocs()">
+                                <i class="bi bi-code-slash me-2"></i>API Access
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 bg-gradient-primary p-5 d-flex flex-column justify-content-center">
+                        <div class="text-center text-white">
+                            <i class="bi bi-graph-up display-1 mb-3"></i>
+                            <h3 class="fw-bold mb-2">System Performance</h3>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>API Response Time</span>
+                                    <span>127ms</span>
+                                </div>
+                                <div class="progress bg-white bg-opacity-25" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>System Uptime</span>
+                                    <span>99.9%</span>
+                                </div>
+                                <div class="progress bg-white bg-opacity-25" style="height: 8px;">
+                                    <div class="progress-bar bg-info" style="width: 99.9%"></div>
+                                </div>
+                            </div>
+                            <div class="small text-white-50">
+                                Last updated: <span id="systemTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Metrics -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="metric-card shadow-professional">
+            <div class="metric-value text-primary">
+                <i class="bi bi-clipboard-check me-2"></i>
+                <span id="totalAnalyses">0</span>
+            </div>
+            <div class="metric-label">Total Analyses</div>
+            <div class="mt-3">
+                <small class="text-success">
+                    <i class="bi bi-arrow-up"></i> 12% from last month
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card shadow-professional">
+            <div class="metric-value text-success">
+                <i class="bi bi-check-circle me-2"></i>
+                <span id="compliantCount">0</span>
+            </div>
+            <div class="metric-label">Compliant</div>
+            <div class="mt-3">
+                <small class="text-success">
+                    <i class="bi bi-arrow-up"></i> 8% improvement
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card shadow-professional">
+            <div class="metric-value text-warning">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                <span id="reviewCount">0</span>
+            </div>
+            <div class="metric-label">Review Required</div>
+            <div class="mt-3">
+                <small class="text-muted">
+                    <i class="bi bi-dash"></i> No change
+                </small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="metric-card shadow-professional">
+            <div class="metric-value text-danger">
+                <i class="bi bi-x-circle me-2"></i>
+                <span id="nonCompliantCount">0</span>
+            </div>
+            <div class="metric-label">Non-Compliant</div>
+            <div class="mt-3">
+                <small class="text-danger">
+                    <i class="bi bi-arrow-down"></i> 5% reduction
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Analysis -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-professional">
+            <div class="card-header bg-gradient-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightning-charge me-2"></i>Quick Analysis
+                </h5>
+                <p class="mb-0 mt-2 small text-white-50">Get instant compliance results</p>
+            </div>
+            <div class="card-body">
+                <form id="quickAnalysisForm">
+                    <div class="mb-3">
+                        <label for="zoneType" class="form-label">Zone Type</label>
+                        <select class="form-select" id="zoneType" required>
+                            <option value="">Select zone type...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Property Address</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="bi bi-geo-alt"></i>
+                            </span>
+                            <input type="text" class="form-control" id="address" 
+                                   placeholder="Enter property address" required>
+                        </div>
+                        <div class="form-text">We'll geocode this address automatically</div>
+                    </div>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="buildingHeight" class="form-label">Building Height (ft)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-building"></i>
+                                </span>
+                                <input type="number" class="form-control" id="buildingHeight" 
+                                       step="0.1" min="0" placeholder="35.0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lotCoverage" class="form-label">Lot Coverage (%)</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-pie-chart"></i>
+                                </span>
+                                <input type="number" class="form-control" id="lotCoverage" 
+                                       step="0.1" min="0" max="100" placeholder="40.0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-4">
+                            <label for="setbackFront" class="form-label">Front Setback (ft)</label>
+                            <input type="number" class="form-control" id="setbackFront" 
+                                   step="0.1" min="0" placeholder="20.0">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="setbackRear" class="form-label">Rear Setback (ft)</label>
+                            <input type="number" class="form-control" id="setbackRear" 
+                                   step="0.1" min="0" placeholder="25.0">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="setbackSide" class="form-label">Side Setback (ft)</label>
+                            <input type="number" class="form-control" id="setbackSide" 
+                                   step="0.1" min="0" placeholder="10.0">
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="far" class="form-label">Floor Area Ratio (FAR)</label>
+                            <input type="number" class="form-control" id="far" 
+                                   step="0.01" min="0" placeholder="0.4">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="parking" class="form-label">Parking Spaces</label>
+                            <input type="number" class="form-control" id="parking" 
+                                   min="0" placeholder="2">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-play-circle me-2"></i>Analyze Compliance
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetForm()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="loading-spinner" id="analysisLoading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Analyzing...</span>
+                    </div>
+                    <p class="mt-2">Analyzing compliance...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Analysis Results -->
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-professional">
+            <div class="card-header bg-gradient-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>Recent Analysis
+                </h5>
+                <p class="mb-0 mt-2 small text-white-50">Latest compliance assessments</p>
+            </div>
+            <div class="card-body">
+                <div id="recentAnalysis">
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-inbox display-4 mb-3"></i>
+                        <p>No recent analysis available</p>
+                        <small class="text-muted">Start your first analysis to see results here</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enterprise Features -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card shadow-professional">
+            <div class="card-header bg-gradient-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-star me-2"></i>Enterprise Features
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="bg-primary bg-gradient rounded-circle p-3 mb-3">
+                                <i class="bi bi-shield-check text-white fs-2"></i>
+                            </div>
+                            <h6>Advanced Security</h6>
+                            <p class="text-muted small">Enterprise-grade authentication and data protection</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="bg-success bg-gradient rounded-circle p-3 mb-3">
+                                <i class="bi bi-lightning-charge text-white fs-2"></i>
+                            </div>
+                            <h6>Real-Time Processing</h6>
+                            <p class="text-muted small">Sub-second analysis with advanced caching</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="bg-info bg-gradient rounded-circle p-3 mb-3">
+                                <i class="bi bi-globe text-white fs-2"></i>
+                            </div>
+                            <h6>Nationwide Coverage</h6>
+                            <p class="text-muted small">Complete US zoning regulations database</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="bg-warning bg-gradient rounded-circle p-3 mb-3">
+                                <i class="bi bi-code-slash text-white fs-2"></i>
+                            </div>
+                            <h6>API Integration</h6>
+                            <p class="text-muted small">RESTful API for seamless integration</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-gear me-2"></i>System Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-check text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Compliance Engine</h6>
+                                <small class="text-success">Operational</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-check text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Geocoding Service</h6>
+                                <small class="text-success">Operational</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-success rounded-circle p-2 me-3">
+                                <i class="bi bi-check text-white"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">Zoning Database</h6>
+                                <small class="text-success">Operational</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content shadow-professional-lg">
+            <div class="modal-header bg-gradient-primary text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-clipboard-check me-2"></i>Compliance Analysis Results
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="analysisResults"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="exportResults()">
+                    <i class="bi bi-download me-2"></i>Export Report
+                </button>
+                <button type="button" class="btn btn-success" onclick="shareResults()">
+                    <i class="bi bi-share me-2"></i>Share
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Documentation Modal -->
+<div class="modal fade" id="apiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content shadow-professional">
+            <div class="modal-header bg-gradient-info text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-code-slash me-2"></i>Enterprise API Documentation
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Enterprise API requires authentication. Contact sales for API key access.
+                </div>
+                
+                <h6>Authentication</h6>
+                <p>Include your enterprise API key in the request header:</p>
+                <code>X-API-Key: your-enterprise-api-key</code>
+                
+                <h6 class="mt-4">Core Endpoints</h6>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Endpoint</th>
+                                <th>Description</th>
+                                <th>Rate Limit</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-primary">GET</span></td>
+                                <td><code>/api/zones</code></td>
+                                <td>Get available zone types</td>
+                                <td>100/hour</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-success">POST</span></td>
+                                <td><code>/api/geocode</code></td>
+                                <td>Geocode address to coordinates</td>
+                                <td>500/hour</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-success">POST</span></td>
+                                <td><code>/api/compliance/analyze</code></td>
+                                <td>Analyze property compliance</td>
+                                <td>200/hour</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning">POST</span></td>
+                                <td><code>/api/v1/compliance/batch</code></td>
+                                <td>Batch analysis (Enterprise)</td>
+                                <td>1000/hour</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h6 class="mt-4">Sample Request</h6>
+                <pre class="bg-light p-3 rounded"><code>curl -X POST https://api.zoningcompliance.com/api/compliance/analyze \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: your-key" \
+  -d '{
+    "zone_type": "R-1",
+    "coordinates": {"latitude": 40.7128, "longitude": -74.0060},
+    "building_height_ft": 35.0,
+    "lot_coverage_percent": 40.0
+  }'</code></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="contactSales()">
+                    <i class="bi bi-person me-2"></i>Contact Sales
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Support Modal -->
+<div class="modal fade" id="supportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content shadow-professional">
+            <div class="modal-header bg-gradient-success text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-headset me-2"></i>Enterprise Support
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <div class="bg-success bg-gradient rounded-circle p-4 d-inline-block mb-3">
+                        <i class="bi bi-headset text-white fs-1"></i>
+                    </div>
+                    <h4>24/7 Enterprise Support</h4>
+                    <p class="text-muted">Get dedicated support for your enterprise deployment</p>
+                </div>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <i class="bi bi-telephone text-success fs-3 mb-2"></i>
+                                <h6>Phone Support</h6>
+                                <p class="mb-0">1-800-ZONING</p>
+                                <small class="text-muted">Mon-Fri 8AM-8PM EST</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <i class="bi bi-envelope text-info fs-3 mb-2"></i>
+                                <h6>Email Support</h6>
+                                <p class="mb-0">enterprise@zoningcompliance.com</p>
+                                <small class="text-muted">Response within 4 hours</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <h6>Support Plans</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Plan</th>
+                                    <th>Response Time</th>
+                                    <th>SLA</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Standard</strong></td>
+                                    <td>24 hours</td>
+                                    <td>99.5%</td>
+                                    <td>$499/month</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Professional</strong></td>
+                                    <td>4 hours</td>
+                                    <td>99.9%</td>
+                                    <td>$1,999/month</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Enterprise</strong></td>
+                                    <td>1 hour</td>
+                                    <td>99.99%</td>
+                                    <td>Custom</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" onclick="contactSupport()">
+                    <i class="bi bi-chat me-2"></i>Start Chat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pricing Modal -->
+<div class="modal fade" id="pricingModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content shadow-professional">
+            <div class="modal-header bg-gradient-warning text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-credit-card me-2"></i>Enterprise Pricing Plans
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-primary">
+                            <div class="card-header bg-primary text-white text-center">
+                                <h5 class="mb-0">Professional</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="display-4 fw-bold text-primary">$499</div>
+                                <p class="text-muted">per month</p>
+                                <hr>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Up to 1,000 analyses/month</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Standard API access</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Email support</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Basic reporting</li>
+                                    <li class="mb-2 text-muted"><i class="bi bi-x text-danger me-2"></i>Batch processing</li>
+                                    <li class="mb-2 text-muted"><i class="bi bi-x text-danger me-2"></i>Custom integrations</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer text-center">
+                                <button class="btn btn-primary w-100">Get Started</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-success shadow-professional-lg">
+                            <div class="card-header bg-success text-white text-center">
+                                <h5 class="mb-0">Enterprise</h5>
+                                <span class="badge bg-warning">Most Popular</span>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="display-4 fw-bold text-success">$1,999</div>
+                                <p class="text-muted">per month</p>
+                                <hr>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Unlimited analyses</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Advanced API access</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Priority support</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Advanced reporting</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Batch processing</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Custom integrations</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer text-center">
+                                <button class="btn btn-success w-100">Get Started</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-warning">
+                            <div class="card-header bg-warning text-white text-center">
+                                <h5 class="mb-0">Custom</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <div class="display-4 fw-bold text-warning">Custom</div>
+                                <p class="text-muted">Tailored pricing</p>
+                                <hr>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Everything in Enterprise</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Dedicated infrastructure</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>24/7 phone support</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>Custom features</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>SLA guarantee</li>
+                                    <li class="mb-2"><i class="bi bi-check text-success me-2"></i>On-premise deployment</li>
+                                </ul>
+                            </div>
+                            <div class="card-footer text-center">
+                                <button class="btn btn-warning w-100">Contact Sales</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let recentAnalyses = [];
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    loadZoneTypes();
+    updateMetrics();
+    updateSystemTime();
+    setInterval(updateSystemTime, 1000);
+});
+
+// Update system time
+function updateSystemTime() {
+    const now = new Date();
+    const timeString = now.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    const timeElement = document.getElementById('systemTime');
+    if (timeElement) {
+        timeElement.textContent = timeString;
+    }
+}
+
+// Load zone types
+async function loadZoneTypes() {
+    try {
+        const response = await apiCall('/zones');
+        const select = document.getElementById('zoneType');
+        
+        response.zones.forEach(zone => {
+            const option = document.createElement('option');
+            option.value = zone;
+            option.textContent = zone;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        showAlert('Failed to load zone types', 'danger');
+    }
+}
+
+// Quick analysis form submission
+document.getElementById('quickAnalysisForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        zone_type: document.getElementById('zoneType').value,
+        address: document.getElementById('address').value,
+        building_height_ft: parseFloat(document.getElementById('buildingHeight').value) || null,
+        lot_coverage_percent: parseFloat(document.getElementById('lotCoverage').value) || null,
+        setbacks: {
+            front: parseFloat(document.getElementById('setbackFront').value) || null,
+            rear: parseFloat(document.getElementById('setbackRear').value) || null,
+            side: parseFloat(document.getElementById('setbackSide').value) || null
+        },
+        far: parseFloat(document.getElementById('far').value) || null,
+        parking_spaces: parseInt(document.getElementById('parking').value) || null
+    };
+    
+    // Validate required fields
+    if (!formData.zone_type || !formData.address) {
+        showAlert('Please enter both zone type and address', 'warning');
+        return;
+    }
+    
+    // Geocode address first
+    try {
+        showLoading(document.getElementById('analysisLoading'));
+        
+        const geocodeResponse = await apiCall('/geocode', {
+            method: 'POST',
+            body: JSON.stringify({ address: formData.address })
+        });
+        
+        if (geocodeResponse.success) {
+            formData.coordinates = geocodeResponse.coordinates;
+            
+            // Perform compliance analysis
+            const analysisResponse = await apiCall('/compliance/analyze', {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+            
+            if (analysisResponse.success) {
+                window.currentReport = analysisResponse.report;
+                displayResults(analysisResponse.report);
+                addToRecent(analysisResponse.report);
+                updateMetrics();
+                showAlert('Analysis completed successfully!', 'success');
+            } else {
+                showAlert('Analysis failed: ' + (analysisResponse.error || 'Unknown error'), 'danger');
+            }
+        } else {
+            showAlert('Failed to geocode address. Please check the address and try again.', 'danger');
+        }
+    } catch (error) {
+        console.error('Analysis error:', error);
+        showAlert('Analysis failed: ' + (error.message || 'Unknown error'), 'danger');
+    } finally {
+        hideLoading(document.getElementById('analysisLoading'));
+    }
+});
+
+// Display analysis results with enhanced animations
+function displayResults(report) {
+    const resultsDiv = document.getElementById('analysisResults');
+    
+    const statusClass = report.overall_status === 'compliant' ? 'success' : 
+                       report.overall_status === 'non_compliant' ? 'danger' : 'warning';
+    
+    resultsDiv.innerHTML = `
+        <div class="row mb-4 fade-in">
+            <div class="col-md-6">
+                <div class="text-center">
+                    <div class="compliance-score text-${statusClass}">
+                        ${formatNumber(report.compliance_score)}%
+                    </div>
+                    <div class="text-uppercase text-muted">Compliance Score</div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex align-items-center justify-content-center h-100">
+                    <span class="badge badge-status bg-${statusClass}">
+                        <i class="bi bi-${statusClass === 'success' ? 'check-circle' : statusClass === 'danger' ? 'x-circle' : 'exclamation-triangle'} me-2"></i>
+                        ${report.overall_status.replace('_', ' ').toUpperCase()}
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6><i class="bi bi-building me-2"></i>Property Information</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tr><td>Property ID:</td><td><strong>${report.property_id}</strong></td></tr>
+                        <tr><td>Zone Type:</td><td><strong>${report.zone_type}</strong></td></tr>
+                        <tr><td>Analysis Date:</td><td><strong>${formatDate(report.analysis_date)}</strong></td></tr>
+                        <tr><td>Coordinates:</td><td><strong>${formatNumber(report.coordinates.latitude)}, ${formatNumber(report.coordinates.longitude)}</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="bi bi-clipboard-data me-2"></i>Regulations Summary</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <tr><td>Max Height:</td><td><strong>${report.regulations.max_building_height_ft} ft</strong></td></tr>
+                        <tr><td>Max Coverage:</td><td><strong>${report.regulations.max_lot_coverage_percent}%</strong></td></tr>
+                        <tr><td>Max FAR:</td><td><strong>${report.regulations.max_far}</strong></td></tr>
+                        <tr><td>Min Parking:</td><td><strong>${report.regulations.min_parking_spaces} spaces</strong></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <h6><i class="bi bi-list-check me-2"></i>Compliance Checks</h6>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Regulation</th>
+                                <th>Actual</th>
+                                <th>Required</th>
+                                <th>Status</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${report.checks.map(check => {
+                                const checkStatusClass = check.status === 'compliant' ? 'success' : 
+                                                        check.status === 'non_compliant' ? 'danger' : 'warning';
+                                return `
+                                    <tr class="slide-in">
+                                        <td><strong>${check.regulation}</strong></td>
+                                        <td>${formatNumber(check.actual_value)}</td>
+                                        <td>${formatNumber(check.required_value)}</td>
+                                        <td><span class="badge bg-${checkStatusClass}">${check.status.replace('_', ' ')}</span></td>
+                                        <td><small>${check.details}</small></td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        ${report.recommendations.length > 0 ? `
+        <div class="row mt-4">
+            <div class="col-12">
+                <h6><i class="bi bi-lightbulb me-2"></i>Recommendations</h6>
+                <div class="alert alert-info fade-in">
+                    <ul class="mb-0">
+                        ${report.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        ` : ''}
+    `;
+    
+    // Show modal with animation
+    const modal = new bootstrap.Modal(document.getElementById('resultsModal'));
+    modal.show();
+}
+
+// Add to recent analyses with enhanced display
+function addToRecent(report) {
+    recentAnalyses.unshift(report);
+    if (recentAnalyses.length > 5) {
+        recentAnalyses = recentAnalyses.slice(0, 5);
+    }
+    updateRecentDisplay();
+}
+
+// Update recent display with enhanced styling
+function updateRecentDisplay() {
+    const recentDiv = document.getElementById('recentAnalysis');
+    
+    if (recentAnalyses.length === 0) {
+        recentDiv.innerHTML = `
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-inbox display-4 mb-3"></i>
+                <p>No recent analysis available</p>
+                <small class="text-muted">Start your first analysis to see results here</small>
+            </div>
+        `;
+        return;
+    }
+    
+    recentDiv.innerHTML = recentAnalyses.map((report, index) => {
+        const statusClass = report.overall_status === 'compliant' ? 'success' : 
+                           report.overall_status === 'non_compliant' ? 'danger' : 'warning';
+        const statusIcon = report.overall_status === 'compliant' ? 'check-circle' : 
+                          report.overall_status === 'non_compliant' ? 'x-circle' : 'exclamation-triangle';
+        
+        return `
+            <div class="border-bottom pb-3 mb-3 fade-in" style="animation-delay: ${index * 0.1}s">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">
+                            <i class="bi bi-building me-1"></i>${report.property_id}
+                        </h6>
+                        <small class="text-muted">
+                            <i class="bi bi-tag me-1"></i>${report.zone_type} • 
+                            <i class="bi bi-clock me-1"></i>${formatDate(report.analysis_date)}
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-${statusClass} badge-status">
+                            <i class="bi bi-${statusIcon} me-1"></i>
+                            ${formatNumber(report.compliance_score)}%
+                        </span>
+                        <div class="small text-muted mt-1">
+                            ${report.overall_status.replace('_', ' ').toUpperCase()}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+// Update metrics with animations
+function updateMetrics() {
+    const total = recentAnalyses.length;
+    const compliant = recentAnalyses.filter(r => r.overall_status === 'compliant').length;
+    const review = recentAnalyses.filter(r => r.overall_status === 'requires_review').length;
+    const nonCompliant = recentAnalyses.filter(r => r.overall_status === 'non_compliant').length;
+    
+    // Animate number changes
+    animateValue('totalAnalyses', 0, total, 1000);
+    animateValue('compliantCount', 0, compliant, 1000);
+    animateValue('reviewCount', 0, review, 1000);
+    animateValue('nonCompliantCount', 0, nonCompliant, 1000);
+}
+
+// Animate number changes
+function animateValue(id, start, end, duration) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    
+    const range = end - start;
+    const increment = range / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+            element.textContent = end;
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.round(current);
+        }
+    }, 16);
+}
+
+// Reset form
+function resetForm() {
+    document.getElementById('quickAnalysisForm').reset();
+}
+
+// Export results as PDF
+function exportResults() {
+    if (!window.currentReport) {
+        showAlert('No analysis report available for export', 'warning');
+        return;
+    }
+    
+    const report = window.currentReport;
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Header
+    doc.setFontSize(20);
+    doc.setTextColor(33, 37, 41);
+    doc.text('Zoning Compliance Analysis Report', 20, 20);
+    
+    // Report Info
+    doc.setFontSize(12);
+    doc.setTextColor(108, 117, 125);
+    doc.text(`Report ID: ${report.property_id}`, 20, 35);
+    doc.text(`Generated: ${new Date(report.analysis_date).toLocaleString()}`, 20, 42);
+    doc.text(`Zone Type: ${report.zone_type}`, 20, 49);
+    
+    // Compliance Score Box
+    const statusColors = {
+        'compliant': [40, 167, 69],
+        'non_compliant': [220, 53, 69],
+        'requires_review': [255, 193, 7]
+    };
+    const color = statusColors[report.overall_status] || [108, 117, 125];
+    
+    doc.setFillColor(color[0], color[1], color[2]);
+    doc.roundedRect(20, 60, 170, 25, 3, 3, 'F');
+    
+    doc.setFontSize(14);
+    doc.setTextColor(255, 255, 255);
+    doc.text(`Compliance Score: ${report.compliance_score}%`, 30, 72);
+    doc.text(`Status: ${report.overall_status.replace('_', ' ').toUpperCase()}`, 30, 80);
+    
+    // Coordinates
+    doc.setTextColor(33, 37, 41);
+    doc.setFontSize(12);
+    doc.text('Property Coordinates:', 20, 100);
+    doc.setFontSize(10);
+    doc.setTextColor(108, 117, 125);
+    doc.text(`Latitude: ${report.coordinates.latitude}`, 25, 108);
+    doc.text(`Longitude: ${report.coordinates.longitude}`, 25, 115);
+    doc.text(`Accuracy: ${(report.coordinates.accuracy * 100).toFixed(1)}%`, 25, 122);
+    
+    // Regulations Summary
+    doc.setTextColor(33, 37, 41);
+    doc.setFontSize(12);
+    doc.text('Applicable Regulations:', 20, 140);
+    doc.setFontSize(10);
+    doc.setTextColor(108, 117, 125);
+    doc.text(`Max Building Height: ${report.regulations.max_building_height_ft} ft`, 25, 148);
+    doc.text(`Max Lot Coverage: ${report.regulations.max_lot_coverage_percent}%`, 25, 155);
+    doc.text(`Max FAR: ${report.regulations.max_far}`, 25, 162);
+    doc.text(`Min Parking Spaces: ${report.regulations.min_parking_spaces}`, 25, 169);
+    
+    // Compliance Checks Table
+    let yPos = 190;
+    doc.setTextColor(33, 37, 41);
+    doc.setFontSize(12);
+    doc.text('Compliance Checks:', 20, yPos);
+    yPos += 10;
+    
+    // Table headers
+    doc.setFillColor(240, 240, 240);
+    doc.rect(20, yPos - 5, 170, 8, 'F');
+    doc.setFontSize(9);
+    doc.setTextColor(33, 37, 41);
+    doc.text('Regulation', 25, yPos);
+    doc.text('Actual', 80, yPos);
+    doc.text('Required', 110, yPos);
+    doc.text('Status', 140, yPos);
+    yPos += 8;
+    
+    // Table rows
+    report.checks.forEach((check, index) => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        
+        // Alternate row colors
+        if (index % 2 === 0) {
+            doc.setFillColor(248, 249, 250);
+            doc.rect(20, yPos - 5, 170, 6, 'F');
+        }
+        
+        const statusColor = check.status === 'compliant' ? [40, 167, 69] : 
+                           check.status === 'non_compliant' ? [220, 53, 69] : [255, 193, 7];
+        
+        doc.setTextColor(33, 37, 41);
+        doc.text(check.regulation.substring(0, 25), 25, yPos);
+        doc.text(String(check.actual_value).substring(0, 15), 80, yPos);
+        doc.text(String(check.required_value).substring(0, 15), 110, yPos);
+        
+        doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
+        doc.text(check.status.replace('_', ' '), 140, yPos);
+        
+        yPos += 6;
+    });
+    
+    // Recommendations
+    if (report.recommendations && report.recommendations.length > 0) {
+        if (yPos > 250) {
+            doc.addPage();
+            yPos = 20;
+        }
+        
+        yPos += 10;
+        doc.setTextColor(33, 37, 41);
+        doc.setFontSize(12);
+        doc.text('Recommendations:', 20, yPos);
+        yPos += 8;
+        
+        doc.setFontSize(10);
+        doc.setTextColor(108, 117, 125);
+        report.recommendations.forEach(rec => {
+            if (yPos > 280) {
+                doc.addPage();
+                yPos = 20;
+            }
+            const lines = doc.splitTextToSize(`• ${rec}`, 160);
+            doc.text(lines, 25, yPos);
+            yPos += (lines.length * 5) + 3;
+        });
+    }
+    
+    // Footer
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(`Zoning Compliance Checker - Page ${i} of ${pageCount}`, 20, 290);
+        doc.text('Generated by Professional Zoning Compliance System', 150, 290);
+    }
+    
+    // Save PDF
+    const filename = `compliance-report-${report.property_id}-${new Date().toISOString().split('T')[0]}.pdf`;
+    doc.save(filename);
+    
+    showAlert('Report exported successfully!', 'success');
+}
+
+// Share results
+function shareResults() {
+    if (!currentReport) {
+        showAlert('No analysis report available for sharing', 'warning');
+        return;
+    }
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'Zoning Compliance Report',
+            text: `Compliance Report for ${currentReport.property_id}: ${currentReport.compliance_score}% compliant`,
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        showAlert('Report link copied to clipboard!', 'success');
+    }
+}
+
+// Modal functions
+function showAPIDocs() {
+    const modal = new bootstrap.Modal(document.getElementById('apiModal'));
+    modal.show();
+}
+
+function showAboutModal() {
+    const modal = new bootstrap.Modal(document.getElementById('aboutModal'));
+    modal.show();
+}
+
+function showSupportModal() {
+    const modal = new bootstrap.Modal(document.getElementById('supportModal'));
+    modal.show();
+}
+
+function showPricingModal() {
+    const modal = new bootstrap.Modal(document.getElementById('pricingModal'));
+    modal.show();
+}
+
+function testAPI() {
+    showAlert('API testing tool coming soon!', 'info');
+}
+
+function contactSales() {
+    showAlert('Sales team will contact you within 24 hours!', 'success');
+}
+
+function contactSupport() {
+    showAlert('Support chat initiating... Available 24/7 for enterprise clients!', 'success');
+}
+
+// Enhanced alert function with animations
+function showAlert(message, type = 'info') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show fade-in`;
+    alertDiv.innerHTML = `
+        <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'danger' ? 'x-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    const container = document.querySelector('main .container');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto-dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

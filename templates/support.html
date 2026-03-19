@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Support - Zoning Compliance Checker{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow-professional mb-4">
+            <div class="card-header bg-gradient-primary text-white py-4">
+                <h2 class="mb-0"><i class="bi bi-headset me-2"></i>Support Center</h2>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-5">
+                    <i class="bi bi-headset display-1 text-primary"></i>
+                    <h3 class="mt-3">We're Here to Help</h3>
+                    <p class="lead text-muted">Get assistance with your zoning compliance needs</p>
+                </div>
+
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 bg-light text-center">
+                            <div class="card-body">
+                                <i class="bi bi-envelope-fill text-primary fs-1 mb-3"></i>
+                                <h5>Email Support</h5>
+                                <p class="text-muted">support@zoningcompliance.com</p>
+                                <small class="text-muted">Response within 24 hours</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 bg-light text-center">
+                            <div class="card-body">
+                                <i class="bi bi-telephone-fill text-success fs-1 mb-3"></i>
+                                <h5>Phone Support</h5>
+                                <p class="text-muted">1-800-ZONING-1</p>
+                                <small class="text-muted">24/7 for Enterprise clients</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 bg-light text-center">
+                            <div class="card-body">
+                                <i class="bi bi-chat-fill text-warning fs-1 mb-3"></i>
+                                <h5>Live Chat</h5>
+                                <p class="text-muted">Available 9AM - 6PM EST</p>
+                                <small class="text-muted">Enterprise accounts only</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5">
+
+                <h4 class="mb-4"><i class="bi bi-question-circle me-2"></i>Frequently Asked Questions</h4>
+
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I perform my first compliance analysis?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Navigate to the <a href="/">Dashboard</a> or <a href="/analysis">Analysis</a> page, enter a property address, select the zone type, fill in the property details (height, coverage, setbacks, etc.), and click "Analyze Compliance". The system will geocode the address and perform a comprehensive compliance check.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                What zone types are supported?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We support all major zoning categories including: Residential Single (R-1), Residential Multiple (R-2), Residential High Density (R-3), Commercial (C-1, C-2), Industrial Light (I-1), Industrial Heavy (I-2), Mixed Use (MU), and Agricultural (A). You can view all available zones on our <a href="/">Dashboard</a>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                How accurate is the geocoding?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                We use OpenStreetMap Nominatim for geocoding, which provides high accuracy for most addresses. For best results, use complete addresses including street number, street name, city, and state. The system returns coordinates with accuracy scores to help you assess reliability.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                Can I export my analysis results?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes! After performing an analysis, click the "Export" button to download your compliance report. Enterprise users have access to additional export formats including PDF, JSON, and CSV. Contact our <a href="mailto:sales@zoningcompliance.com">sales team</a> for enterprise access.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
+                                Do you offer API access?
+                            </button>
+                        </h2>
+                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes, we offer a comprehensive REST API for enterprise clients. API endpoints include geocoding, compliance analysis, batch processing, and zone regulation lookups. View our <a href="/documentation">API Documentation</a> for details or contact <a href="mailto:enterprise@zoningcompliance.com">enterprise sales</a>.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq6">
+                                How do I get an Enterprise account?
+                            </button>
+                        </h2>
+                        <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Enterprise accounts include unlimited analyses, batch processing, priority support, and custom integrations. Contact our sales team at <a href="mailto:sales@zoningcompliance.com">sales@zoningcompliance.com</a> or call 1-800-ZONING-1 to discuss your needs and get a custom quote.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-5">
+
+                <div class="text-center">
+                    <h4 class="mb-3">Still Need Help?</h4>
+                    <p class="mb-4">Our support team is ready to assist you with any questions or issues.</p>
+                    <a href="mailto:support@zoningcompliance.com" class="btn btn-primary btn-lg me-2">
+                        <i class="bi bi-envelope me-2"></i>Contact Support
+                    </a>
+                    <a href="/documentation" class="btn btn-outline-primary btn-lg">
+                        <i class="bi bi-book me-2"></i>View Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

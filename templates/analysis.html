@@ -1,0 +1,554 @@
+{% extends "base.html" %}
+
+{% block title %}Compliance Analysis - Zoning Compliance Checker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-1">Detailed Analysis</h1>
+                <p class="text-muted">Comprehensive zoning compliance analysis with mapping</p>
+            </div>
+            <div>
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Analysis Form -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-clipboard-data me-2"></i>Property Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="analysisForm">
+                    <div class="mb-3">
+                        <label for="propertyId" class="form-label">Property ID</label>
+                        <input type="text" class="form-control" id="propertyId" 
+                               placeholder="PROP-2024-001" value="PROP-{{ '2024' }}-001">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="zoneType" class="form-label">Zone Type *</label>
+                        <select class="form-select" id="zoneType" required>
+                            <option value="">Select zone type...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Property Address *</label>
+                        <input type="text" class="form-control" id="address" 
+                               placeholder="123 Main St, City, State" required>
+                        <div class="form-text">We'll geocode this automatically</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="analystNotes" class="form-label">Analyst Notes</label>
+                        <textarea class="form-control" id="analystNotes" rows="3" 
+                                  placeholder="Additional notes for this analysis..."></textarea>
+                    </div>
+                    
+                    <h6 class="mt-4 mb-3">Building Specifications</h6>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="buildingHeight" class="form-label">Building Height (ft)</label>
+                            <input type="number" class="form-control" id="buildingHeight" 
+                                   step="0.1" min="0" placeholder="35.0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="buildingStories" class="form-label">Number of Stories</label>
+                            <input type="number" class="form-control" id="buildingStories" 
+                                   min="0" placeholder="2">
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="lotArea" class="form-label">Lot Area (sq ft)</label>
+                            <input type="number" class="form-control" id="lotArea" 
+                                   step="0.1" min="0" placeholder="10000">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="buildingArea" class="form-label">Building Area (sq ft)</label>
+                            <input type="number" class="form-control" id="buildingArea" 
+                                   step="0.1" min="0" placeholder="4000">
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="lotCoverage" class="form-label">Lot Coverage (%)</label>
+                            <input type="number" class="form-control" id="lotCoverage" 
+                                   step="0.1" min="0" max="100" placeholder="40.0">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="far" class="form-label">Floor Area Ratio (FAR)</label>
+                            <input type="number" class="form-control" id="far" 
+                                   step="0.01" min="0" placeholder="0.4">
+                        </div>
+                    </div>
+                    
+                    <h6 class="mt-4 mb-3">Setbacks (ft)</h6>
+                    
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="setbackFront" class="form-label">Front</label>
+                            <input type="number" class="form-control" id="setbackFront" 
+                                   step="0.1" min="0" placeholder="20.0">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="setbackRear" class="form-label">Rear</label>
+                            <input type="number" class="form-control" id="setbackRear" 
+                                   step="0.1" min="0" placeholder="25.0">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="setbackSide" class="form-label">Side</label>
+                            <input type="number" class="form-control" id="setbackSide" 
+                                   step="0.1" min="0" placeholder="10.0">
+                        </div>
+                    </div>
+                    
+                    <div class="row g-3 mt-1">
+                        <div class="col-md-6">
+                            <label for="parking" class="form-label">Parking Spaces</label>
+                            <input type="number" class="form-control" id="parking" 
+                                   min="0" placeholder="2">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="loadingSpaces" class="form-label">Loading Spaces</label>
+                            <input type="number" class="form-control" id="loadingSpaces" 
+                                   min="0" placeholder="0">
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-play-circle me-2"></i>Analyze Compliance
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary ms-2" onclick="resetForm()">
+                            <i class="bi bi-arrow-clockwise me-2"></i>Reset
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="loading-spinner" id="analysisLoading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Analyzing...</span>
+                    </div>
+                    <p class="mt-2">Analyzing compliance...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Map and Results -->
+    <div class="col-lg-8">
+        <!-- Map -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-map me-2"></i>Property Location
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div id="map" style="height: 400px;"></div>
+            </div>
+        </div>
+        
+        <!-- Results -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-clipboard-check me-2"></i>Analysis Results
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="analysisResults">
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-clipboard-data display-4 mb-3"></i>
+                        <p>Complete the property details and click "Analyze Compliance" to see results</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Modal -->
+<div class="modal fade" id="exportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Analysis Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Export Format</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportPDF" value="pdf" checked>
+                        <label class="form-check-label" for="exportPDF">
+                            PDF Report
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportJSON" value="json">
+                        <label class="form-check-label" for="exportJSON">
+                            JSON Data
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="exportFormat" id="exportCSV" value="csv">
+                        <label class="form-check-label" for="exportCSV">
+                            CSV Summary
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="exportEmail" class="form-label">Email Report (Optional)</label>
+                    <input type="email" class="form-control" id="exportEmail" 
+                           placeholder="client@example.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="performExport()">
+                    <i class="bi bi-download me-2"></i>Export
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let map;
+let currentMarker;
+let currentReport;
+
+// Initialize page
+document.addEventListener('DOMContentLoaded', function() {
+    initializeMap();
+    loadZoneTypes();
+});
+
+// Initialize map
+function initializeMap() {
+    map = L.map('map').setView([40.7128, -74.0060], 13);
+    
+    L.tileLayer(APP_CONFIG.mapTileUrl, {
+        attribution: APP_CONFIG.attribution
+    }).addTo(map);
+}
+
+// Load zone types
+async function loadZoneTypes() {
+    try {
+        const response = await apiCall('/zones');
+        const select = document.getElementById('zoneType');
+        
+        response.zones.forEach(zone => {
+            const option = document.createElement('option');
+            option.value = zone;
+            option.textContent = zone;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        showAlert('Failed to load zone types', 'danger');
+    }
+}
+
+// Analysis form submission
+document.getElementById('analysisForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        property_id: document.getElementById('propertyId').value,
+        zone_type: document.getElementById('zoneType').value,
+        address: document.getElementById('address').value,
+        analyst_notes: document.getElementById('analystNotes').value,
+        building_height_ft: parseFloat(document.getElementById('buildingHeight').value) || null,
+        building_stories: parseInt(document.getElementById('buildingStories').value) || null,
+        lot_area_sqft: parseFloat(document.getElementById('lotArea').value) || null,
+        building_area_sqft: parseFloat(document.getElementById('buildingArea').value) || null,
+        lot_coverage_percent: parseFloat(document.getElementById('lotCoverage').value) || null,
+        far: parseFloat(document.getElementById('far').value) || null,
+        setbacks: {
+            front: parseFloat(document.getElementById('setbackFront').value) || null,
+            rear: parseFloat(document.getElementById('setbackRear').value) || null,
+            side: parseFloat(document.getElementById('setbackSide').value) || null
+        },
+        parking_spaces: parseInt(document.getElementById('parking').value) || null,
+        loading_spaces: parseInt(document.getElementById('loadingSpaces').value) || null
+    };
+    
+    try {
+        showLoading(document.getElementById('analysisLoading'));
+        
+        // Geocode address first
+        const geocodeResponse = await apiCall('/geocode', {
+            method: 'POST',
+            body: JSON.stringify({ address: formData.address })
+        });
+        
+        if (geocodeResponse.success) {
+            formData.coordinates = geocodeResponse.coordinates;
+            
+            // Update map
+            updateMap(formData.coordinates.latitude, formData.coordinates.longitude);
+            
+            // Perform compliance analysis
+            const analysisResponse = await apiCall('/compliance/analyze', {
+                method: 'POST',
+                body: JSON.stringify(formData)
+            });
+            
+            if (analysisResponse.success) {
+                currentReport = analysisResponse.report;
+                displayDetailedResults(currentReport);
+            } else {
+                showAlert('Analysis failed', 'danger');
+            }
+        } else {
+            showAlert('Failed to geocode address', 'danger');
+        }
+    } catch (error) {
+        showAlert('Analysis failed: ' + error.message, 'danger');
+    } finally {
+        hideLoading(document.getElementById('analysisLoading'));
+    }
+});
+
+// Update map with new location
+function updateMap(lat, lon) {
+    // Remove existing marker
+    if (currentMarker) {
+        map.removeLayer(currentMarker);
+    }
+    
+    // Add new marker
+    currentMarker = L.marker([lat, lon]).addTo(map);
+    currentMarker.bindPopup(`Property Location<br>${lat.toFixed(6)}, ${lon.toFixed(6)}`).openPopup();
+    
+    // Center map on location
+    map.setView([lat, lon], 15);
+}
+
+// Display detailed results
+function displayDetailedResults(report) {
+    const resultsDiv = document.getElementById('analysisResults');
+    
+    const statusClass = report.overall_status === 'compliant' ? 'success' : 
+                       report.overall_status === 'non_compliant' ? 'danger' : 'warning';
+    
+    resultsDiv.innerHTML = `
+        <!-- Summary Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card text-center border-${statusClass}">
+                    <div class="card-body">
+                        <div class="compliance-score text-${statusClass}">
+                            ${formatNumber(report.compliance_score)}%
+                        </div>
+                        <div class="text-muted">Compliance Score</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-primary">${report.checks.length}</h4>
+                        <div class="text-muted">Checks Performed</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-success">${report.checks.filter(c => c.status === 'compliant').length}</h4>
+                        <div class="text-muted">Passed</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h4 class="text-danger">${report.checks.filter(c => c.status === 'non_compliant').length}</h4>
+                        <div class="text-muted">Failed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Status Badge -->
+        <div class="text-center mb-4">
+            <span class="badge badge-status bg-${statusClass} p-3">
+                <i class="bi bi-${statusClass === 'success' ? 'check-circle' : statusClass === 'danger' ? 'x-circle' : 'exclamation-triangle'} me-2"></i>
+                ${report.overall_status.replace('_', ' ').toUpperCase()}
+            </span>
+        </div>
+        
+        <!-- Property Information -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h6><i class="bi bi-building me-2"></i>Property Information</h6>
+                <table class="table table-sm">
+                    <tr><td>Property ID:</td><td><strong>${report.property_id}</strong></td></tr>
+                    <tr><td>Zone Type:</td><td><strong>${report.zone_type}</strong></td></tr>
+                    <tr><td>Analysis Date:</td><td><strong>${formatDate(report.analysis_date)}</strong></td></tr>
+                    <tr><td>Coordinates:</td><td><strong>${formatNumber(report.coordinates.latitude)}, ${formatNumber(report.coordinates.longitude)}</strong></td></tr>
+                    ${report.analyst_notes ? `<tr><td colspan="2"><strong>Notes:</strong> ${report.analyst_notes}</td></tr>` : ''}
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6><i class="bi bi-clipboard-data me-2"></i>Regulations Summary</h6>
+                <table class="table table-sm">
+                    <tr><td>Max Height:</td><td><strong>${report.regulations.max_building_height_ft} ft</strong></td></tr>
+                    <tr><td>Max Coverage:</td><td><strong>${report.regulations.max_lot_coverage_percent}%</strong></td></tr>
+                    <tr><td>Max FAR:</td><td><strong>${report.regulations.max_far}</strong></td></tr>
+                    <tr><td>Min Parking:</td><td><strong>${report.regulations.min_parking_spaces} spaces</strong></td></tr>
+                    <tr><td>Front Setback:</td><td><strong>${report.regulations.min_setback_front} ft</strong></td></tr>
+                    <tr><td>Rear Setback:</td><td><strong>${report.regulations.min_setback_rear} ft</strong></td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Detailed Compliance Checks -->
+        <div class="mb-4">
+            <h6><i class="bi bi-list-check me-2"></i>Detailed Compliance Checks</h6>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Regulation</th>
+                            <th>Actual Value</th>
+                            <th>Required Value</th>
+                            <th>Variance</th>
+                            <th>Status</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${report.checks.map(check => {
+                            const checkStatusClass = check.status === 'compliant' ? 'success' : 
+                                                    check.status === 'non_compliant' ? 'danger' : 'warning';
+                            const varianceIcon = check.variance >= 0 ? '↑' : '↓';
+                            const varianceColor = check.status === 'compliant' ? 'text-success' : 'text-danger';
+                            
+                            return `
+                                <tr>
+                                    <td><strong>${check.regulation}</strong></td>
+                                    <td>${formatNumber(check.actual_value)}</td>
+                                    <td>${formatNumber(check.required_value)}</td>
+                                    <td><span class="${varianceColor}">${varianceIcon} ${formatNumber(Math.abs(check.variance))}</span></td>
+                                    <td><span class="badge bg-${checkStatusClass}">${check.status.replace('_', ' ').toUpperCase()}</span></td>
+                                    <td><small>${check.details}</small></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Recommendations -->
+        ${report.recommendations.length > 0 ? `
+        <div class="mb-4">
+            <h6><i class="bi bi-lightbulb me-2"></i>Recommendations</h6>
+            <div class="alert alert-info">
+                <ul class="mb-0">
+                    ${report.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            </div>
+        </div>
+        ` : ''}
+        
+        <!-- Action Buttons -->
+        <div class="text-center">
+            <button type="button" class="btn btn-primary" onclick="showExportModal()">
+                <i class="bi bi-download me-2"></i>Export Report
+            </button>
+            <button type="button" class="btn btn-outline-primary ms-2" onclick="printReport()">
+                <i class="bi bi-printer me-2"></i>Print
+            </button>
+            <button type="button" class="btn btn-outline-secondary ms-2" onclick="shareReport()">
+                <i class="bi bi-share me-2"></i>Share
+            </button>
+        </div>
+    `;
+}
+
+// Show export modal
+function showExportModal() {
+    if (!currentReport) {
+        showAlert('No analysis report available for export', 'warning');
+        return;
+    }
+    
+    const modal = new bootstrap.Modal(document.getElementById('exportModal'));
+    modal.show();
+}
+
+// Perform export
+function performExport() {
+    const format = document.querySelector('input[name="exportFormat"]:checked').value;
+    const email = document.getElementById('exportEmail').value;
+    
+    // Implementation for different export formats
+    showAlert(`Exporting report as ${format.toUpperCase()}...`, 'info');
+    
+    // Close modal
+    bootstrap.Modal.getInstance(document.getElementById('exportModal')).hide();
+}
+
+// Print report
+function printReport() {
+    window.print();
+}
+
+// Share report
+function shareReport() {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Zoning Compliance Report',
+            text: `Compliance Report for ${currentReport.property_id}`,
+            url: window.location.href
+        });
+    } else {
+        // Fallback: copy to clipboard
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        showAlert('Report link copied to clipboard', 'success');
+    }
+}
+
+// Reset form
+function resetForm() {
+    document.getElementById('analysisForm').reset();
+    document.getElementById('analysisResults').innerHTML = `
+        <div class="text-center text-muted py-5">
+            <i class="bi bi-clipboard-data display-4 mb-3"></i>
+            <p>Complete the property details and click "Analyze Compliance" to see results</p>
+        </div>
+    `;
+    
+    // Reset map
+    if (currentMarker) {
+        map.removeLayer(currentMarker);
+        currentMarker = null;
+    }
+    map.setView([40.7128, -74.0060], 13);
+}
+</script>
+{% endblock %}
